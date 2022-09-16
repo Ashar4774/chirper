@@ -6,6 +6,7 @@ use App\Http\Requests\ChirpRequest;
 use App\Models\Chirp;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ChirpController extends Controller
@@ -40,8 +41,9 @@ class ChirpController extends Controller
      */
     public function store(ChirpRequest $request)
     {
+        $user = Auth::id();
         $validated = $request->validated();
-        User::chirps()->create($validated);
+        User::find($user)->chirps()->create($validated);
 
         return redirect(route('chirps.index'));
     }
@@ -75,9 +77,14 @@ class ChirpController extends Controller
      * @param  \App\Models\Chirp  $chirp
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Chirp $chirp)
+    public function update(ChirpRequest $request, Chirp $chirp)
     {
-        //
+        $this->authorize('update', $chirp);
+
+        $validated = $request->validated();
+        $chirp->update($validated);
+
+        return redirect(route('chirps.index'));
     }
 
     /**
