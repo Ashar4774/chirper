@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ChirpRequest;
 use App\Models\Chirp;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,7 +18,7 @@ class ChirpController extends Controller
     public function index()
     {
         return Inertia::render('Chirps/Index', [
-            //
+            'chirps' => Chirp::with('user:id,name')->latest()->get(),
         ]);
     }
 
@@ -40,7 +41,7 @@ class ChirpController extends Controller
     public function store(ChirpRequest $request)
     {
         $validated = $request->validated();
-        $request->user()->chirps()->create($validated);
+        User::chirps()->create($validated);
 
         return redirect(route('chirps.index'));
     }
